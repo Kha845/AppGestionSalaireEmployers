@@ -1,0 +1,28 @@
+# Utilisation de l'image officielle MySQL
+FROM mysql:latest
+
+# Ajouter des fichiers de configuration personnalisés si nécessaire
+# COPY my.cnf /etc/mysql/my.cnf
+
+# Définir des variables d'environnement pour la configuration de MySQL
+ENV MYSQL_DATABASE=gestionstock \
+    MYSQL_USER=laravel \
+    MYSQL_PASSWORD=laravel \
+    MYSQL_ROOT_PASSWORD=root_password
+
+    COPY ./initdb.d/gestionstock.sql /docker-entrypoint-initdb.d
+
+# Assurer que le répertoire de données a les bonnes permissions
+RUN chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
+    && chmod -R 755 /var/lib/mysql /var/run/mysqld
+
+# Exposer le port MySQL par défaut
+EXPOSE 3306
+
+
+# **CMD instruction modified to connect by default as laravel**
+CMD ["mysqld"]
+
+RUN echo "GRANT ALL PRIVILEGES ON *.* TO 'laravel'@'%' WITH GRANT OPTION;" > /docker-entrypoint-initdb.d/grant_privileges.sql \
+    && chmod 644 /docker-entrypoint-initdb.d/grant_privileges.sql
+

@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8081:80"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=base64:Hy4uEB034qpO+udtRkPcXeMakTEz9BsUWz1DCcUCLRc=
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=gestionstock
+      - DB_USERNAME=laravel
+      - DB_PASSWORD=laravel
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    container_name: app-serveurweb
+
+  db:
+    build:
+      context: ./mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=gestionstock
+      - MYSQL_USER=laravel
+      - MYSQL_PASSWORD=laravel
+      - MYSQL_ROOT_PASSWORD=root_password
+    container_name: app-db
+    volumes:
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d
